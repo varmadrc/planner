@@ -1,24 +1,26 @@
-name: Input Action (Manual Trigger)
+name: Prod to Beta
 
 on:
-  workflow_run:
-    workflows: 
-      - Input Action (Manual Trigger)
+  workflow_dispatch:
+    inputs:
+      resource_ids:
+        description: 'Comma-separated list of resource IDs to check and sync'
+        required: true
 
 jobs:
-  greet:
+  check-and-sync:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
-      - name: Print message
-        with:
-          name: ${{ inputs.name }}
-        run: echo "Hi, ${{ inputs.name }}!"
+    - name: Retrieve and Sync Buckets
+      env:
+        RESOURCE_IDS: ${{ github.event.inputs.resource_ids }}
+      run: |
+        echo "Processing resource IDs: $RESOURCE_IDS"
+        IFS=',' read -ra RESOURCES <<< "$RESOURCE_IDS"
 
-    inputs:
-      name:
-        description: 'The name to greet'
-        required: true
+        for RESOURCE_ID in "${RESOURCES[@]}"; do
+          echo "Fetching bucket name for resource: $RESOURCE_ID"
