@@ -1,15 +1,24 @@
-name: Test Action
+name: Input Action (Manual Trigger)
 
 on:
-  push:
+  workflow_run:
+    workflows: 
+      - Input Action (Manual Trigger)
 
 jobs:
-  test:
+  greet:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Print a message
-        run: echo "Hello, GitHub Actions! Triggered on push to any branch!"
+      - name: Print message
+        with:
+          name: ${{ inputs.name }}
+        run: echo "Hi, ${{ inputs.name }}!"
+
+    inputs:
+      name:
+        description: 'The name to greet'
+        required: true
