@@ -1,0 +1,26 @@
+name: Prod to Beta
+
+on:
+  workflow_dispatch:
+    inputs:
+      resource_ids:
+        description: 'Comma-separated list of resource IDs to check and sync'
+        required: true
+
+jobs:
+  check-and-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Retrieve and Sync Buckets
+        env:
+          RESOURCE_IDS: ${{ github.event.inputs.resource_ids }}
+        run: |
+          echo "Processing resource IDs: $RESOURCE_IDS"
+          IFS=',' read -ra RESOURCES <<< "$RESOURCE_IDS"
+          for RESOURCE_ID in "${RESOURCES[@]}"; do
+            echo "Fetching bucket name for resource: $RESOURCE_ID"
+          done
